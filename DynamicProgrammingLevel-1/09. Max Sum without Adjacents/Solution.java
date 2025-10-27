@@ -30,8 +30,8 @@ public class Solution{
         int dp[][] = new int[arr.length][2];
         dp[0][0] = arr[0];
         for(int i=1;i<arr.length;i++){
-            dp[i][0] = arr[i] + dp[i-1][1];
-            dp[i][1] = Math.max(dp[i-1][0], dp[i-1][1]);
+            dp[i][0] = arr[i] + dp[i-1][1]; // Include current
+            dp[i][1] = Math.max(dp[i-1][0], dp[i-1][1]); // Exclude current
         }
         return Math.max(dp[arr.length-1][0], dp[arr.length-1][1]);
     }
