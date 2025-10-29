@@ -1,51 +1,84 @@
 import java.util.*;
 /*
-Painting the Fence
-Difficulty: MediumAccuracy: 32.89%Submissions: 123K+Points: 4Average Time: 40m
-Given a fence with n posts and k colours, find out the number of ways of painting the fence so that not more than two consecutive posts have the same colours.
-Answers are guaranteed to be fit into a 32 bit integer.
+Paint N Houses (Many colors)
+Difficulty: MediumAccuracy: 51.33%Submissions: 28K+Points: 4
+There is a row of N houses, each house can be painted with N colours. The cost of painting each house with a certain color is different. 
+You have to paint all the houses such that no two adjacent houses have the same color. Find the minimum cost to paint all houses.
 
-Input: n = 3, k = 2 
-Output: 6
-Explanation: Let the 2 colours be 'R' and 'B'. We have following possible combinations:
-1. RRB
-2. RBR
-3. RBB
-4. BRR
-5. BRB
-6. BBR
-Input: n = 2, k = 4 
-Output: 16
-Explanation: After coloring first post with 4 possible combinations, you can still color next posts with all 4 colors. Total possible combinations will be 4x4=16
+The cost of painting each house in red, blue or green colour is given in the array r[], g[] and b[] respectively.
 
-colors = 3 houses = 4
-        1           2                               3   
-ii      0           3(rr, gg, bb)                   6(rgg, rbb, grr, gbb, brr, bgg)
-ij      3(r,g,b)    3x2=6 (rg,rb,gr,gb,br,bg)       9x2=18 (rrg, rrb, ggr, ggb, bbr, bbg,__ rgr, rgb, rbr,rbg, grb,grg, gbr, gbg, brb, brg, bgb, bgr)
-total   3           9                               24
 
+Example 1:
+Input:
+House = 4, Color = 3
+1 5 7 (House 1 costs for 3 colors)
+5 8 4
+3 2 9
+1 2 4
+
+Output: 8
+Explanation: We can color the houses 
+in RGR manner to incur minimum cost.
+We could have obtained a cost of 3 if 
+we coloured all houses red, but we 
+cannot color adjacent houses with 
+the same color.
+
+
+Your Task:  
+You don't need to read input or print anything. Your task is to complete the function distinctColoring() which takes the size N and the color arrays r[], g[], b[] as input parameters and returns the minimum cost of coloring such that the color of no two houses is same.
 */
-
-
-
 public class Solution{
     public static void main (String args[]){
         Scanner sc = new Scanner(System.in);
         int houses = 4, colors = 3;
-        System.out.println("Houses: " + houses + " Colors: " + colors);
-        Solution ob = new Solution();
-        System.out.println(ob.countWays(houses, colors));
-        sc.close();  
-    }
-    int countWays(int n, int k) {
-        // code here.
-        int dp[][] = new int[n][2];
-        dp[0][1] = k;
-        for(int i=1;i<n;i++){
-            dp[i][0] = dp[i-1][1]; // same color as previous
-            dp[i][1] = (dp[i-1][0] + dp[i-1][1])*(k-1); // different color than previous
+        int houseColors[][] = {
+            {1, 5, 7},
+            {5, 8, 4},
+            {3, 2, 9},
+            {1, 2, 4}
+        };
+        System.out.println("House Colors : ");
+        for(int i=0;i<houses;i++){
+            System.out.println(Arrays.toString(houseColors[i]));    
         }
-        return dp[n-1][0] + dp[n-1][1];
+        long ans = distinctColoring(houses, colors, houseColors);
+        System.out.println("Minimum cost to paint houses is : "+ans);   
+
+    }
+    public static long distinctColoring(int houses, int colors, int houseColors[][]) {
+        // code here
+        long dp[][] = new long[houses][colors];
+        long min1 = Long.MAX_VALUE, min2 = Long.MAX_VALUE;
+        int c1 = -1, c2 = -1;
+        for(int i=0;i<houses;i++){
+            long newMin1 = Long.MAX_VALUE, newMin2 = Long.MAX_VALUE;
+            for(int j=0;j<colors;j++){
+                dp[i][j] = houseColors[i][j];
+
+                if(i!=0){// Not the first house
+                    if(c1 == j){ // The color j is same as previous house's min color
+                        dp[i][j] += min2;   // So we chose second minimum color
+                    }else{
+                        dp[i][j] += min1;
+                    }
+                }
+
+                // Update min1 and min2 for next house
+                if(dp[i][j] < newMin1){
+                    newMin2 = newMin1;
+                    c2 = c1;
+                    newMin1 = dp[i][j];
+                    c1 = j;
+                }else if(dp[i][j] < newMin2){
+                    newMin2 = dp[i][j];
+                    c2 = j;
+                }
+            }
+            min1 = newMin1;
+            min2 = newMin2;
+        }
+        return min1;
     }
 }
 
